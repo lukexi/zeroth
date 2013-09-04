@@ -45,10 +45,10 @@ zeroTHInternal c
                                        "-" -> openTempFile tmpDir "TH.cpphs.zeroth"
                                        _   -> return (inputFile c, undefined)
          when (inputFile c == "-") $ hPutStr tmpHandle input >> hClose tmpHandle
-         let exts = readExtensions input
+         let exts = snd <$> readExtensions input
          hPutStrLn stderr $ "extensions: " ++ show exts
          let firstLine      = head $ lines input
-             shouldRunCpphs = "-cpp" `elem` ghcArgs c || " -cpp " `isInfixOf` firstLine || CPP `elem` (fold exts)
+             shouldRunCpphs = "-cpp" `elem` ghcArgs c || " -cpp " `isInfixOf` firstLine || CPP `elem` (toExtensionList Haskell2010 $ fold exts)
          thInput     <- if shouldRunCpphs then preprocessCpphs (cpphsPath c) (["--noline","-DHASTH"]++cpphsArgs c) inputFile2
                                           else return input
          zerothInput <- if shouldRunCpphs then preprocessCpphs (cpphsPath c) ("--noline" : cpphsArgs c) inputFile2
@@ -116,7 +116,7 @@ numberAndPrettyPrint (Module mLoc m prags mbWarn exports imp decls)
           nAndPDec d@(InstSig loc _ _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(RulePragmaDecl loc _) = [(location loc, prettyPrint d)]
           nAndPDec d@(SpecInlineSig loc _ _ _ _) = [(location loc, prettyPrint d)]
-          nAndPDec d@(SpecSig loc _ _) = [(location loc, prettyPrint d)]
+          nAndPDec d@(SpecSig loc _ _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(TypeFamDecl loc _ _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(TypeInsDecl loc _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(WarnPragmaDecl loc _) = [(location loc, prettyPrint d)]
@@ -203,7 +203,7 @@ runTH ghc (Module _ _ pragmas _ _ imports decls) ghcOpts
               = SpliceDecl loc
                   . App (App (Var . Qual (ModuleName helperModule) $ Ident "helper")
                              (Paren splice))
-                  . Tuple
+                  . Tuple Boxed
                   $ Lit . Int . fromIntegral <$> [ srcLine loc, srcColumn loc ]
           editSplice x = x
           extraOpts = ["-w"]
