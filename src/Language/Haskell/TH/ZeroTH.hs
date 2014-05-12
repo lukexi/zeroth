@@ -45,10 +45,12 @@ zeroTHInternal c
                                        "-" -> openTempFile tmpDir "TH.cpphs.zeroth"
                                        _   -> return (inputFile c, undefined)
          when (inputFile c == "-") $ hPutStr tmpHandle input >> hClose tmpHandle
-         let exts = snd <$> readExtensions input
+         let exts = readExtensions input
+             hasCPP = not $ null [ () | Just (_, exts') <- [exts],
+                                    EnableExtension CPP <- exts' ]
          hPutStrLn stderr $ "extensions: " ++ show exts
          let firstLine      = head $ lines input
-             shouldRunCpphs = "-cpp" `elem` ghcArgs c || " -cpp " `isInfixOf` firstLine || CPP `elem` (toExtensionList Haskell2010 $ fold exts)
+             shouldRunCpphs = "-cpp" `elem` ghcArgs c || " -cpp " `isInfixOf` firstLine || hasCPP 
          thInput     <- if shouldRunCpphs then preprocessCpphs (cpphsPath c) (["--noline","-DHASTH"]++cpphsArgs c) inputFile2
                                           else return input
          zerothInput <- if shouldRunCpphs then preprocessCpphs (cpphsPath c) ("--noline" : cpphsArgs c) inputFile2
@@ -173,12 +175,12 @@ runTH ghc (Module _ _ pragmas _ _ imports decls) ghcOpts
          hPutStr tmpInHandle realM
          hClose tmpInHandle
          let args = [tmpInPath]++ghcOpts++extraOpts
-         --putStrLn $ "Module:\n" ++ realM
-         --putStrLn $ "Running: " ++ unwords (ghc:args)
+         putStrLn $ "Module:\n" ++ realM
+         putStrLn $ "Running: " ++ unwords (ghc:args)
          (inH,outH,errH,pid) <- runInteractiveProcess ghc args Nothing Nothing
          hClose inH
          output <- hGetContents outH
-         --putStrLn $ "TH Data:\n" ++ output
+         putStrLn $ "TH Data:\n" ++ output
          length output `seq` hClose outH
          errMsg <- hGetContents errH
          length errMsg `seq` hClose errH
