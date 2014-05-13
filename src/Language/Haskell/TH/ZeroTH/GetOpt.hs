@@ -3,7 +3,6 @@
 module Language.Haskell.TH.ZeroTH.GetOpt where
 
 import Control.Applicative                ( (<$>) )
-import Data.List                          ( isPrefixOf )
 import Data.Maybe                         ( fromMaybe )
 import Data.Monoid                        ( Any(..), Last(..), Monoid(..) )
 import Data.Monoid.Record                 ( addP )
@@ -11,7 +10,6 @@ import System.Console.GetOpt              ( ArgDescr (..), OptDescr (..) )
 import System.Console.GetOpt.Skeleton     ( mParseArgs )
 import System.Console.GetOpt.StandardOpts ( StandardFlag, stdOpts )
 import System.Directory                   ( findExecutable )
-import System.Info                        ( os )
 #ifdef version
 import Distribution.Version               ( Version(..) )
 #else
@@ -43,10 +41,7 @@ mkConfig tmpFlags
                  , dropImport = tempDropImport tmpFlags `orElse` defaultDrop
                  , wholeFile  = not . getAny $ tempJustSplices tmpFlags}
     where
-        defaultGhcArgs = ["-fno-code"] --  "-o", nullFile, "-ohi", nullFile]
-        nullFile
-            | "mingw" `isPrefixOf` os = "NUL:"
-            | otherwise               = "/dev/null"
+        defaultGhcArgs = ["-fno-code"]
         defaultDrop = ["Language.Haskell.TH"]
 
 orElse :: [a] -> [a] -> [a]

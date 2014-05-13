@@ -2,14 +2,13 @@ module Language.Haskell.TH.ZeroTH
     ( prettyPrintAll, zeroTH, zeroTHInternal
     ) where
 
-import Language.Haskell.Exts
+import Language.Haskell.Exts hiding (loc)
 import System.Process        ( runInteractiveProcess, waitForProcess )
 import System.IO             ( hClose, hGetContents, hPutStr, hPutStrLn, openTempFile, stderr )
 import System.Directory      ( removeFile, getTemporaryDirectory )
 import System.Exit           ( ExitCode (..) )
 import Control.Applicative   ( (<$>), (<*>) )
 import Control.Monad         ( guard, when )
-import Data.Foldable         ( fold )
 import Data.Generics.Aliases ( mkT )
 import Data.Generics.Schemes ( everywhere, listify )
 import Data.List             ( (\\), delete, intersperse, isInfixOf, isPrefixOf, nub, stripPrefix )
