@@ -30,7 +30,6 @@ Library
                      process, 
                      syb,
                      template-haskell,
-                     hskeleton >= 0.1 && < 0.2,
                      derive, 
                      monoid-record >= 0.1 && < 0.2,
                      Cabal,
@@ -42,7 +41,9 @@ Library
                      Language.Haskell.TH.ZeroTH.Helper,
                      Language.Haskell.TH.ZeroTH.Comments,
                      Distribution.ZeroTH
-    Other-modules:   ListUtils
+    Other-modules:   ListUtils,
+                     System.Console.GetOpt.Skeleton
+                     System.Console.GetOpt.StandardOpts
     GHC-options:     -Wall
     Hs-source-dirs:  src
 
