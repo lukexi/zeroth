@@ -42,12 +42,14 @@ topLevelBindrs x = case x of
     FamilyD _ n _ _     -> [n]
     DataInstD _ n _ _ _ -> [n]
     NewtypeInstD _ n _ _ _ -> [n]
-    TySynInstD n _ _    -> [n]
+    TySynInstD n _    -> [n]
     PragmaD (InlineP n _ _ _)       -> [n]
     PragmaD (SpecialiseP n _ _ _)   -> [n]
     InstanceD {}    -> []
     ForeignD {}     -> []
     PragmaD {}      -> []
+    ClosedTypeFamilyD n _ _ _ -> [n]
+    RoleAnnotD n _ -> [n]
 
 renameU :: Name -> Name
 renameU (Name occ (NameU _)) = Name occ NameS

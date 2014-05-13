@@ -121,12 +121,15 @@ numberAndPrettyPrint (Module mLoc m prags mbWarn exports imp decls)
           nAndPDec d@(TypeFamDecl loc _ _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(TypeInsDecl loc _ _) = [(location loc, prettyPrint d)]
           nAndPDec d@(WarnPragmaDecl loc _) = [(location loc, prettyPrint d)]
+          nAndPDec d@(InlineConlikeSig loc _ _) = [(location loc, prettyPrint d)]
+          nAndPDec d@(AnnPragma loc _) = [(location loc, prettyPrint d)]
           nAndPPrag (LanguagePragma loc names)
               | null filteredNames = []
               | otherwise          = [(location loc, prettyPrint $ LanguagePragma loc filteredNames)]
               where
                   filteredNames = names \\ (Ident <$> unwantedLanguageOptions)
           nAndPPrag (OptionsPragma loc mt s) = [(location loc, prettyPrint . OptionsPragma loc mt $ filterOptions s)]
+          nAndPPrag p@(AnnModulePragma loc _) = [(location loc, prettyPrint p)]
           filterOptions optStr = foldr (\opt -> replaceAll (" -" ++ opt ++ " ") " ") optStr $ "cpp" : "fth" : (('X' :) <$> unwantedLanguageOptions)
           unwantedLanguageOptions = ["CPP", "TemplateHaskell"]
 
