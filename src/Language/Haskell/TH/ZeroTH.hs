@@ -131,7 +131,7 @@ numberAndPrettyPrint (Module mLoc m prags mbWarn exports imp decls)
           nAndPPrag (OptionsPragma loc mt s) = [(location loc, prettyPrint . OptionsPragma loc mt $ filterOptions s)]
           nAndPPrag p@(AnnModulePragma loc _) = [(location loc, prettyPrint p)]
           filterOptions optStr = foldr (\opt -> replaceAll (" -" ++ opt ++ " ") " ") optStr $ "cpp" : "fth" : (('X' :) <$> unwantedLanguageOptions)
-          unwantedLanguageOptions = ["CPP", "TemplateHaskell"]
+          unwantedLanguageOptions = ["CPP", "TemplateHaskell", "QuasiQuotes"]
 
 ppWarnText :: WarningText -> String
 ppWarnText (DeprText s) = "{-# DEPRECATED" ++ s ++ "#-}"
